@@ -25,7 +25,8 @@ def reading_until(word_until, file):
     line = 1
     while line:
         line = file.readline()
-        if line.find(word_until) + 1: # find() возвращает -1, если нет подстроки
+        if line.find(word_until) + 1:
+            """find() возвращает -1, если нет подстроки"""
             return dataset
         line = (''.join(line.split('\n')).replace('\t','')) #удалить \n и \t
         dataset.append(line)
