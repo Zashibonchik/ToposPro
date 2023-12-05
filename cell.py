@@ -11,17 +11,8 @@ class Cell:
         self.adjacency_matrix = adjacency_matrix
         self.additional_information = additional_information
 
-    #перевод данных в датафрейм
-    def transfer_in_df(self):
-        #информация об атомах
-        self.atom_dataset = [line.split() for line in self.atom_dataset ]
-        columns_ = self.atom_dataset[5]
-        """Топос для многих атомов не может самостоятельно определить степень окисления,
-        что может привести к проблемам при дальнейшей обработке.
-        Степень окисления будет равна нулю для атомов, которых она не определна."""
-        for index_line in range(5,len(self.atom_dataset)):
-            if len(self.atom_dataset[index_line]) < len(columns_):
-                self.atom_dataset[index_line].insert(2,0)
-        self.atom_dataset = pd.DataFrame(self.atom_dataset[6:], columns=columns_)
+    def __str__(self):
+        return self.adjacency_matrix.dataset[0]
+
 
 

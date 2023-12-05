@@ -14,5 +14,5 @@ if __name__ == '__main__':
         print('{}: {}'.format(file, len(full_cells[number_])))
         number_ += 1
 
-    full_cells[0][0].transfer_in_df()
-    print(full_cells[0][0].atom_dataset)
+    full_cells[0][0].atom_dataset.transfer_in_df()
+    print(full_cells[0][0].atom_dataset.dataset)
