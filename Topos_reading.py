@@ -16,22 +16,23 @@ def reading(path) -> list:
             while Topos_dataset.tell() != os.path.getsize(path + '\\' + file):
                 # данные об атомах
                 atom_dataset = reading_until(word_until='matrix', file=Topos_dataset)
-                atom_dataset = atoms_transfer_in_df(atom_dataset)
-                # MC
-                MC_dataset = reading_until(word_until='Composition', file=Topos_dataset)
-                # доп параметры
-                add_info_dataset = reading_until(word_until='--------------------------------------------',
-                                                  file=Topos_dataset)
-                topos_cell = Cell(atom_dataset=Atoms(atom_dataset),
-                                  adjacency_matrix=Adjacency_matrix(MC_dataset),
-                                  additional_information=Additional_information(add_info_dataset),
-                                  name_db=path)
-                file_cells.append(topos_cell)
                 """В конце файлов .dat создаются две пустые строки,
                 которые ошибочно воспринимаются за ячейку.
                 Поэтому удаляем псевдоячейку, если в ее МС 1 элемент"""
-                if len(topos_cell.adjacency_matrix.dataset) == 1:
-                    file_cells.remove(topos_cell)
+                if len(atom_dataset) > 1:
+                    atom_dataset = atoms_transfer_in_df(atom_dataset)
+                    # MC
+                    MC_dataset = reading_until(word_until='Composition', file=Topos_dataset)
+                    MC_dataset = adjacency_matrix_transfer_in_df(MC_dataset)
+                    # доп параметры
+                    add_info_dataset = reading_until(word_until='--------------------------------------------',
+                                                      file=Topos_dataset)
+                    add_info_dataset = additional_information_transfer_in_df(add_info_dataset)
+                    topos_cell = Cell(atom_dataset=Atoms(atom_dataset),
+                                      adjacency_matrix=Adjacency_matrix(MC_dataset),
+                                      additional_information=Additional_information(add_info_dataset),
+                                      name_db=path)
+                    file_cells.append(topos_cell)
         path_cells.append(file_cells)
     return path_cells
 
@@ -47,9 +48,9 @@ def reading_until(word_until, file) -> list:
             return dataset
         """при достижении строки с \n, while не работает. 
         Возможно, неверное предположение"""
-        # Проверка на пустую строку и удаление \n и \t
+        # Проверка на пустую строку и удаление \n
         if line != '\n':
-            line = (''.join(line.split('\n')).replace('\t',''))
+            line = line.replace('\n', '')
             dataset.append(line)
         else:
             line = 1
@@ -63,7 +64,7 @@ def atoms_transfer_in_df(atom_dataset) -> pd.DataFrame:
     return atom_dataset
 
 """Ф-ия для устранения ошибки, связанной с пустыми значениями
- в столбке со степенью окисления в .dat"""
+в столбце со степенью окисления в .dat"""
 """Топос для многих атомов не может самостоятельно определить степень окисления,
 что может привести к проблемам при дальнейшей обработке.
 Степень окисления будет равна нулю для атомов, которых она не определена."""
@@ -76,3 +77,25 @@ def atoms_beautiful_line(line) -> list:
     except:
         line.insert(2, 0)
         return line[:7] + [line[-1]]
+
+def adjacency_matrix_transfer_in_df(adjacency_matrix) -> pd.DataFrame:
+    columns_ = adjacency_matrix[0].split('\t')
+    adjacency_matrix = [line.split('\t')[:-1] for line in adjacency_matrix[1:] if line !='---------------------------------------------------------']
+    adjacency_matrix = pd.DataFrame(adjacency_matrix, columns=columns_)
+    return adjacency_matrix
+
+def additional_information_transfer_in_df(additional_information) -> pd.Series:
+    parameters_dict = {}
+    Z = additional_information[3]
+    cell_parameters = additional_information[9:11]
+    volume = additional_information[11]
+    parameters_dict['Z'] = after_equals(Z)
+    parameters_dict['Volume'] = after_equals(volume[:volume.find(';')])
+    for parameters in cell_parameters:
+        for name, value in zip(parameters.split()[::2], parameters.split()[1::2]):
+            parameters_dict[name[:-1]] = value
+    return pd.Series(parameters_dict, dtype='float32')
+
+def after_equals(line):
+    index_eq = line.find('=')
+    return line[index_eq + 1:]
