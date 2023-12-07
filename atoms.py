@@ -1,20 +1,6 @@
 import pandas as pd
-"""Ф-ия для устранения ошибки, связанной с пустыми значениями
- в столбке со степенью окисления в .dat"""
-"""Топос для многих атомов не может самостоятельно определить степень окисления,
-что может привести к проблемам при дальнейшей обработке.
-Степень окисления будет равна нулю для атомов, которых она не определена."""
-def beautiful_line(line) -> list:
-    line = line.split()
-    try:
-        int(line[2]) # проверка на пустоту в столбце со степенью окисления
-        return line[:7] + [line[-1]]
-    except:
-        line.insert(2, 0)
-        return line[:7] + [line[-1]]
-
 class Atoms:
-    def __init__(self, dataset: list):
+    def __init__(self, dataset: pd.DataFrame):
         self.dataset = dataset
 
     #перевод данных в датафрейм

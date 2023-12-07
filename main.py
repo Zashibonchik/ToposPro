@@ -1,6 +1,6 @@
 import os
 from Topos_reading import reading
-from cell import Cell
+
 if __name__ == '__main__':
     # path = input('Введите путь к файлам: ')
     path = 'D:\Py\проекты\ToposPro\check'
@@ -14,5 +14,4 @@ if __name__ == '__main__':
         print('{}: {}'.format(file, len(full_cells[number_])))
         number_ += 1
 
-    full_cells[0][0].atom_dataset.transfer_in_df()
-    print(full_cells[0][1].atom_dataset.dataset)
+    print(full_cells[0][0].atom_dataset.dataset)

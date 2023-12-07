@@ -3,7 +3,7 @@ class Cell:
     def __init__(self, atom_dataset, adjacency_matrix, additional_information, name_db):
         """
         :param atom_dataset: type - , информация об атомах структуры (название, координаты и тд)
-        :param adjacency_matrix: type - , матрица смежности (МС)
+        :param adjacency_matrix: type - , матрица смежности
         :param additional_information: type - , доп параметры, идущие после МС
         :param name_db: type - str, название базы данных
         """
