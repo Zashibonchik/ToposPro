@@ -4,7 +4,7 @@ from atoms import Atoms
 from adjacency_matrix import Adjacency_matrix
 from additional_information import Additional_information
 #чтение топос файла, возвращает список списков ячеек (списки внутри представляют собой ячейки из одного файла)
-def reading(path):
+def reading(path) -> list:
     path_cells = [] #список списков ячеек
     for file in os.listdir(path):
         file_cells = [] #ячейки из одного файла
@@ -28,7 +28,7 @@ def reading(path):
     return path_cells
 
 #ф-ия для чтения фрагментов файла, возвращает список строк
-def reading_until(word_until, file):
+def reading_until(word_until, file) -> list:
     dataset = []
     line = 1
     while line:

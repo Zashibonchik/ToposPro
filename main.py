@@ -15,4 +15,4 @@ if __name__ == '__main__':
         number_ += 1
 
     full_cells[0][0].atom_dataset.transfer_in_df()
-    print(full_cells[0][0].atom_dataset.dataset)
+    print(full_cells[0][1].atom_dataset.dataset)
