@@ -1,6 +1,10 @@
 import os
 from Topos_reading import reading
 
+"""Не определяется G3!!!"""
+
+
+
 if __name__ == '__main__':
     # path = input('Введите путь к файлам: ')
     path = 'D:\Py\проекты\ToposPro\check'
@@ -13,6 +17,7 @@ if __name__ == '__main__':
     for file in os.listdir(path):
         print('{}: {}'.format(file, len(full_cells[number_])))
         number_ += 1
-    print(full_cells[0][0].atom_dataset.dataset)
-    print(full_cells[0][0].adjacency_matrix.dataset)
-    print(full_cells[0][0].additional_information.dataset)
+    # (full_cells[1][0].in_POSCAR())
+    print(full_cells[1][0].atom_dataset.dataset)
+    print(full_cells[1][0].adjacency_matrix.dataset)
+    print(full_cells[1][0].additional_information.dataset)

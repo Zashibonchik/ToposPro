@@ -87,14 +87,20 @@ def adjacency_matrix_transfer_in_df(adjacency_matrix) -> pd.DataFrame:
 def additional_information_transfer_in_df(additional_information) -> pd.Series:
     parameters_dict = {}
     Z = additional_information[3]
+    name_cell = additional_information[-1]
     cell_parameters = additional_information[9:11]
     volume = additional_information[11]
+    #кристал. заселенность
     parameters_dict['Z'] = after_equals(Z)
+    #объем
     parameters_dict['Volume'] = after_equals(volume[:volume.find(';')])
+    #параметры ячейки
     for parameters in cell_parameters:
         for name, value in zip(parameters.split()[::2], parameters.split()[1::2]):
             parameters_dict[name[:-1]] = value
-    return pd.Series(parameters_dict, dtype='float32')
+    #название
+    parameters_dict['name'] = name_cell
+    return pd.Series(parameters_dict)
 
 def after_equals(line):
     index_eq = line.find('=')

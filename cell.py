@@ -14,5 +14,37 @@ class Cell:
     def __str__(self):
         return self.adjacency_matrix.dataset[0]
 
+    def in_POSCAR(self, scaling_factor=1):
+        with open('POSCAR_test', 'w') as export:
+            # имя
+            write_line = [self.additional_information.dataset['name'] + '\n']
+            # фактор скалирования
+            write_line.append(str(scaling_factor) + '\n')
+            # вектор ячейки
+            for zero, parametr in zip(range(3),self.additional_information.dataset[['A','B','C']]):
+                parametr = '{} '.format(0.0) * (zero) + parametr + ' {}'.format(0.0) * (2 - zero) + '\n'
+                write_line.append(parametr)
+            # Список элементов элементов
+            atoms_label = self.atom_dataset.dataset['Name'].unique()
+            write_line.append(' '.join(atoms_label) + '\n')
+            # Количество элементов
+            line_ = ''
+            atoms_count = dict(self.atom_dataset.dataset['Name'].value_counts())
+            for atom in atoms_label:
+                line_ += str(atoms_count[atom]) + ' '
+            write_line.append(line_ + ' \n')
+            # Коорд атомов
+            for index in range(self.atom_dataset.dataset.shape[0]):
+                line_ = ''
+                for value in self.atom_dataset.dataset[['X','Y','Z']].iloc[index]:
+                    line_ += value + ' '
+                write_line.append(line_ + '\n')
+            export.writelines(write_line)
+
+
+
+
+
+
 
 
