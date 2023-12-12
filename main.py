@@ -1,10 +1,10 @@
 import os
 from Topos_reading import reading
-
+import pandas as pd
 """Не определяется G3!!!"""
 
 
-
+pd.set_option('display.max_rows', None)
 if __name__ == '__main__':
     # path = input('Введите путь к файлам: ')
     path = 'D:\Py\проекты\ToposPro\check'
@@ -12,12 +12,14 @@ if __name__ == '__main__':
     #количество файлов и структур
     print('Прочитано файлов: {}'.format(len(full_cells)))
     print('--------------------------------------------')
-    print('Количество структур:')
+    print('Название файла: кол-во структур')
     number_ = 0
     for file in os.listdir(path):
         print('{}: {}'.format(file, len(full_cells[number_])))
         number_ += 1
-    # (full_cells[1][0].in_POSCAR())
-    print(full_cells[1][0].atom_dataset.dataset)
-    print(full_cells[1][0].adjacency_matrix.dataset)
-    print(full_cells[1][0].additional_information.dataset)
+    # Фильтрация Rsd
+    # print(full_cells[1][0].atom_dataset.dataset)
+    full_cells[1][0].filter_matrix()
+    (full_cells[1][0].atom_dataset.filter_Rsd(float(input('Введите минимальное Rsd = '))))
+    print(full_cells[1][0].atom_dataset.filter_dataset)
+    # Фильтрация матрицы смежности по Rsd

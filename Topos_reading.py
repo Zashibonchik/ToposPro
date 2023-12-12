@@ -61,6 +61,8 @@ def atoms_transfer_in_df(atom_dataset) -> pd.DataFrame:
     columns_ = atom_dataset[5].split()[:7] + [atom_dataset[5].split()[-1]]
     atom_dataset = [atoms_beautiful_line(line) for line in atom_dataset if atom_dataset.index(line) > 5]
     atom_dataset = pd.DataFrame(atom_dataset, columns=columns_)
+    #изменяем типы данных
+    atom_dataset = atom_dataset.astype({name:'float16' for name in columns_ if name in columns_[-4:]})
     return atom_dataset
 
 """Ф-ия для устранения ошибки, связанной с пустыми значениями
@@ -85,11 +87,12 @@ def adjacency_matrix_transfer_in_df(adjacency_matrix) -> pd.DataFrame:
     return adjacency_matrix
 
 def additional_information_transfer_in_df(additional_information) -> pd.Series:
+    """Возможно несоотвествие индексов и требуемых значений"""
     parameters_dict = {}
     Z = additional_information[3]
     name_cell = additional_information[-1]
-    cell_parameters = additional_information[9:11]
-    volume = additional_information[11]
+    cell_parameters = additional_information[-4:-2]
+    volume = additional_information[-2]
     #кристал. заселенность
     parameters_dict['Z'] = after_equals(Z)
     #объем

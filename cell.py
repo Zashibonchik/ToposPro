@@ -12,10 +12,16 @@ class Cell:
         self.additional_information = additional_information
 
     def __str__(self):
-        return self.adjacency_matrix.dataset[0]
+        return self.atom_dataset.dataset
 
+    def filter_matrix(self):
+        try:
+            ZA_ = self.atom_dataset.filter_dataset[self.atom_dataset.filter_dataset['Name'] == 'ZA']
+        except:
+            raise AttributeError('Не проведена фильтрация радиусов пустот (Rsd)') from None
     def in_POSCAR(self, scaling_factor=1):
-        with open('POSCAR_test', 'w') as export:
+        """ВЕКТОР ЯЧЕЙКИ"""
+        with open('POSCAR_test', 'a') as export:
             # имя
             write_line = [self.additional_information.dataset['name'] + '\n']
             # фактор скалирования
