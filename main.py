@@ -1,5 +1,6 @@
 import os
 from Topos_reading import reading
+from cell import Cell
 import pandas as pd
 """Не определяется G3!!!"""
 
@@ -18,8 +19,8 @@ if __name__ == '__main__':
         print('{}: {}'.format(file, len(full_cells[number_])))
         number_ += 1
     # Фильтрация Rsd
-    # print(full_cells[1][0].atom_dataset.dataset)
-    full_cells[1][0].filter_matrix()
-    (full_cells[1][0].atom_dataset.filter_Rsd(float(input('Введите минимальное Rsd = '))))
-    print(full_cells[1][0].atom_dataset.filter_dataset)
+    #(full_cells[1][0].atom_dataset.filter_Rsd(float(input('Введите минимальное Rsd = '))))
+    full_cells[0][0].atom_dataset.filter_Rsd(1.4285)
     # Фильтрация матрицы смежности по Rsd
+    print('Список элементов {}')
+    full_cells[0][0].filter_matrix()
