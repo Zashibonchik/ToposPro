@@ -30,8 +30,7 @@ def reading(path) -> list:
                     add_info_dataset = additional_information_transfer_in_df(add_info_dataset)
                     topos_cell = Cell(atom_dataset=Atoms(atom_dataset),
                                       adjacency_matrix=Adjacency_matrix(MC_dataset),
-                                      additional_information=Additional_information(add_info_dataset),
-                                      name_db=path)
+                                      additional_information=Additional_information(add_info_dataset))
                     file_cells.append(topos_cell)
         path_cells.append(file_cells)
     return path_cells

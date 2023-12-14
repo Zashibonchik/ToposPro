@@ -3,7 +3,7 @@ from atoms import Atoms
 from adjacency_matrix import Adjacency_matrix
 from additional_information import Additional_information
 class Cell:
-    def __init__(self, atom_dataset, adjacency_matrix, additional_information, name_db):
+    def __init__(self, atom_dataset, adjacency_matrix, additional_information):
         """
         :param atom_dataset: type - , информация об атомах структуры (название, координаты и тд)
         :param adjacency_matrix: type - , матрица смежности
@@ -20,7 +20,8 @@ class Cell:
         return self.atom_dataset.dataset
 
     #фильтр матрицы
-    def filter_matrix(self, coef_deformation=10):
+    def filter_matrix(self, elements=['Li', 'O'], coef_deformation=10):
+        radii = {'H': 0.400, 'He': 0.700, 'Li': 1.450, 'O': 0.600, 'Mg': 1.500, 'P': 1.000, 'V': 1.350}
         try:
             #Коорд пустот
             ZA_ = self.atom_dataset.filter_dataset[self.atom_dataset.filter_dataset['Name'] == 'ZA']
@@ -30,6 +31,16 @@ class Cell:
             raise AttributeError('Не проведена фильтрация радиусов пустот (Rsd)') from None
         #удаление лишних пустот
         self.adjacency_matrix.filter_Rsd(ZA_)
+        #выбор связи
+        bond = 0
+        for elem in elements:
+            bond += radii[elem]
+        bond = bond - bond * coef_deformation / 100
+        #Удаление связей между пустотами с малыми радиусами
+        self.adjacency_matrix.filter_Rad(bond)
+        #Удаление пустот с КЧ < 2:
+        self.adjacency_matrix.filter_CN()
+
 
 
 
