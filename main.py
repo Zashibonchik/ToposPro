@@ -21,13 +21,15 @@ if __name__ == '__main__':
         print('{}: {}'.format(file, len(full_cells[number_])))
         number_ += 1
     wall()
-    # Фильтрация Rsd
-    #(full_cells[1][0].atom_dataset.filter_Rsd(float(input('Введите минимальное Rsd = '))))
-    full_cells[1][0].atom_dataset.filter_Rsd(1.3507)
-    # Фильтрация матрицы смежности по Rsd
-    print('Список элементов: {}\n'
-          'По умолчанию рассматривается связь Li — O\n'
-          'С коэффициентом деформации 10%'.format(' '.join(full_cells[0][0].composition.keys())))
-    full_cells[1][0].filter_matrix()
-    print(full_cells[1][0].adjacency_matrix.filter_dataset)
+    print('По умолчанию рассматривается связь Li — O\n'
+          'С коэффициентом деформации 10%')
+    wall()
+    for file_cells, file_name in zip(full_cells,os.listdir(path)):
+        print('Для файла {}'.format(file_name))
+        Rsd_file = float(input('Введите минимальное Rsd = '))
+        for cell in file_cells:
+            cell.atom_dataset.filter_Rsd(Rsd_file)
+            cell.filter_matrix()
+            cell.in_POSCAR(path)
+            wall()
 

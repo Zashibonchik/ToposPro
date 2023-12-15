@@ -2,7 +2,7 @@ import pandas as pd
 class Atoms:
     def __init__(self, dataset: pd.DataFrame):
         self.dataset = dataset
-        self.filter_dataset = pd.DataFrame()
+        self.filter_dataset = pd.DataFrame(columns=dataset.columns)
 
     #фильтр Rsd
     def filter_Rsd(self, Rsd_min):

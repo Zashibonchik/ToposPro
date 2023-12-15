@@ -2,7 +2,7 @@ import pandas as pd
 class Adjacency_matrix:
     def __init__(self, dataset: pd.DataFrame):
         self.dataset = dataset
-        self.filter_dataset = pd.DataFrame()
+        self.filter_dataset = pd.DataFrame(columns=dataset.columns)
 
     def filter_Rsd(self, voids):
         #Atom1
@@ -23,7 +23,9 @@ class Adjacency_matrix:
 
     def filter_Rad(self, bond):
         ZA_ = self.filter_dataset[self.filter_dataset['Atom1'].apply(lambda x: 'ZA' in x)]
-        ZA_ = ZA_[ZA_['Atom2'].apply(lambda x: 'ZA' in x)]
+        if not ZA_.empty:
+            """Если пустой DF булево индексировать, то он удаляет столбцы"""
+            ZA_ = ZA_[ZA_['Atom2'].apply(lambda x: 'ZA' in x)]
         self.filter_dataset.drop(ZA_[ZA_['SSeg'] < str(bond)].index, axis=0, inplace=True)
 
     def filter_CN(self):

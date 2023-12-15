@@ -1,19 +1,20 @@
 import pandas as pd
+import os
 from atoms import Atoms
 from adjacency_matrix import Adjacency_matrix
 from additional_information import Additional_information
 class Cell:
-    def __init__(self, atom_dataset, adjacency_matrix, additional_information):
+    def __init__(self, atom_dataset, adjacency_matrix, additional_information,name_db):
         """
-        :param atom_dataset: type - , информация об атомах структуры (название, координаты и тд)
-        :param adjacency_matrix: type - , матрица смежности
-        :param additional_information: type - , доп параметры, идущие после МС
+        :param atom_dataset: type - Dataframe, информация об атомах структуры (название, координаты и тд)
+        :param adjacency_matrix: type - Dataframe, матрица смежности
+        :param additional_information: type - Dataframe, доп параметры, идущие после МС
         :param name_db: type - str, название файла
         """
         self.atom_dataset = atom_dataset
         self.adjacency_matrix = adjacency_matrix
         self.additional_information = additional_information
-        self.name_db = self.additional_information.dataset['name']
+        self.name_db = name_db
         self.composition = dict(self.atom_dataset.dataset['Name'].value_counts())
 
     def __str__(self):
@@ -41,14 +42,12 @@ class Cell:
         #Удаление пустот с КЧ < 2:
         self.adjacency_matrix.filter_CN()
 
-
-
-
-
-
-    def in_POSCAR(self, scaling_factor=1):
-        """ВЕКТОР ЯЧЕЙКИ"""
-        with open('POSCAR_test', 'a') as export:
+    def in_POSCAR(self, path, scaling_factor=1):
+        name_file = self.name_db.replace('.dat','_') + self.additional_information.dataset['name'].replace(' ','')
+        name_file = ''.join(s for s in name_file if s not in '\/:*?"<>|+')
+        if not os.path.isdir(path + '\\ready'):
+            os.mkdir(path + '\\ready')
+        with open(path + '\\ready\\' + name_file, 'a') as export:
             # имя
             write_line = [self.additional_information.dataset['name'] + '\n']
             # фактор скалирования
@@ -67,11 +66,12 @@ class Cell:
                 line_ += str(self.composition[atom]) + ' '
             write_line.append(line_ + ' \n')
             # Коорд атомов
-            for index in range(self.atom_dataset.dataset.shape[0]):
+            for index in range(self.atom_dataset.filter_dataset.shape[0]):
                 line_ = ''
-                for value in self.atom_dataset.dataset[['X','Y','Z']].iloc[index]:
+                for value in self.atom_dataset.filter_dataset[['X','Y','Z']].iloc[index]:
                     line_ += str(value) + ' '
                 write_line.append(line_ + '\n')
+            write_line.append('\n')
             export.writelines(write_line)
 
 

@@ -30,7 +30,8 @@ def reading(path) -> list:
                     add_info_dataset = additional_information_transfer_in_df(add_info_dataset)
                     topos_cell = Cell(atom_dataset=Atoms(atom_dataset),
                                       adjacency_matrix=Adjacency_matrix(MC_dataset),
-                                      additional_information=Additional_information(add_info_dataset))
+                                      additional_information=Additional_information(add_info_dataset),
+                                      name_db=file)
                     file_cells.append(topos_cell)
         path_cells.append(file_cells)
     return path_cells
@@ -60,8 +61,8 @@ def atoms_transfer_in_df(atom_dataset) -> pd.DataFrame:
     columns_ = atom_dataset[5].split()[:7] + [atom_dataset[5].split()[-1]]
     atom_dataset = [atoms_beautiful_line(line) for line in atom_dataset if atom_dataset.index(line) > 5]
     atom_dataset = pd.DataFrame(atom_dataset, columns=columns_)
-    #изменяем типы данных
-    atom_dataset = atom_dataset.astype({name:'float16' for name in columns_ if name in columns_[-4:]})
+    #изменяем типы данных для подсчета Rsd
+    atom_dataset = atom_dataset.astype({name:'float16' for name in columns_ if name in columns_[-1:]})
     return atom_dataset
 
 """Ф-ия для устранения ошибки, связанной с пустыми значениями
@@ -101,7 +102,7 @@ def additional_information_transfer_in_df(additional_information) -> pd.Series:
         for name, value in zip(parameters.split()[::2], parameters.split()[1::2]):
             parameters_dict[name[:-1]] = value
     #название
-    parameters_dict['name'] = name_cell
+    parameters_dict['name'] = name_cell[name_cell.find(':') + 1: name_cell.find('.')]
     return pd.Series(parameters_dict)
 
 def after_equals(line):
