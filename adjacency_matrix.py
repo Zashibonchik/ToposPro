@@ -32,8 +32,9 @@ class Adjacency_matrix:
         ZA_ = self.filter_dataset[self.filter_dataset['Atom1'].apply(lambda x: 'ZA' in x)]
         for elem in ZA_['Atom1'].unique():
             ZA_solo_ = self.filter_dataset[self.filter_dataset['Atom1'] == elem]
-            ZA_solo_ = ZA_solo_['Type'] != ''
-            if ZA_solo_.sum() < 2:
+            ZA_solo_with_ZA_ = ZA_solo_[ZA_solo_['Atom2'].apply(lambda x: 'ZA' in x)]
+            ZA_solo_with_ZA_ = ZA_solo_with_ZA_['Type'] != ''
+            if ZA_solo_with_ZA_.sum() < 2:
                 self.filter_dataset.drop(ZA_solo_.index, inplace=True)
 
 

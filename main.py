@@ -24,12 +24,14 @@ if __name__ == '__main__':
     print('По умолчанию рассматривается связь Li — O\n'
           'С коэффициентом деформации 10%')
     wall()
-    for file_cells, file_name in zip(full_cells,os.listdir(path)):
-        print('Для файла {}'.format(file_name))
-        Rsd_file = float(input('Введите минимальное Rsd = '))
+    for file_cells, file_name in zip(full_cells, os.listdir(path)):
+        print('Файл: {}', file_name)
         for cell in file_cells:
-            cell.atom_dataset.filter_Rsd(Rsd_file)
-            cell.filter_matrix()
-            cell.in_POSCAR(path)
-            wall()
+            for Rsd_min in cell.Rsd_unique('Li'):
+                print('Rsd = ', Rsd_min)
+                cell.atom_dataset.filter_Rsd(Rsd_min)
+                cell.filter_matrix()
+                cell.in_POSCAR(path)
+                wall()
+
 

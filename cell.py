@@ -3,6 +3,7 @@ import os
 from atoms import Atoms
 from adjacency_matrix import Adjacency_matrix
 from additional_information import Additional_information
+import matplotlib.pyplot as plt
 class Cell:
     def __init__(self, atom_dataset, adjacency_matrix, additional_information,name_db):
         """
@@ -19,6 +20,11 @@ class Cell:
 
     def __str__(self):
         return self.atom_dataset.dataset
+
+    #получить уникальные значения Rsd для выбранного элемента
+    def Rsd_unique(self, elem):
+        Elem_ = self.atom_dataset.dataset[self.atom_dataset.dataset['Name'] == elem]
+        return sorted(Elem_['Rsd'].unique())
 
     #фильтр матрицы
     def filter_matrix(self, elements=['Li', 'O'], coef_deformation=10):
@@ -41,13 +47,18 @@ class Cell:
         self.adjacency_matrix.filter_Rad(bond)
         #Удаление пустот с КЧ < 2:
         self.adjacency_matrix.filter_CN()
+        #Удаление пустот с atom_dataset
+        self.atom_dataset.drop_elems(list_elem=self.adjacency_matrix.filter_dataset['Atom1'].unique())
+        #Статистика по Rsd
+        plt.scatter(x=self.atom_dataset.filter_dataset['Rsd'])
 
-    def in_POSCAR(self, path, scaling_factor=1):
+    def in_POSCAR(self, scaling_factor=1):
         name_file = self.name_db.replace('.dat','_') + self.additional_information.dataset['name'].replace(' ','')
         name_file = ''.join(s for s in name_file if s not in '\/:*?"<>|+')
-        if not os.path.isdir(path + '\\ready'):
-            os.mkdir(path + '\\ready')
-        with open(path + '\\ready\\' + name_file, 'a') as export:
+        if not os.path.isdir('ready'):
+            os.mkdir('ready')
+            os.mkdir('ready\\POSCAR')
+        with open('ready\\POSCAR\\' + name_file, 'a') as export:
             # имя
             write_line = [self.additional_information.dataset['name'] + '\n']
             # фактор скалирования
