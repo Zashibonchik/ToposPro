@@ -62,7 +62,7 @@ def atoms_transfer_in_df(atom_dataset) -> pd.DataFrame:
     atom_dataset = [atoms_beautiful_line(line) for line in atom_dataset if atom_dataset.index(line) > 5]
     atom_dataset = pd.DataFrame(atom_dataset, columns=columns_)
     #изменяем типы данных для подсчета Rsd
-    atom_dataset = atom_dataset.astype({name:'float16' for name in columns_ if name in columns_[-1:]})
+    atom_dataset = atom_dataset.astype({name:'float' for name in columns_ if name in columns_[-1:]})
     return atom_dataset
 
 """Ф-ия для устранения ошибки, связанной с пустыми значениями

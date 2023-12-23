@@ -49,12 +49,19 @@ class Cell:
         self.adjacency_matrix.filter_CN()
         #Удаление пустот с atom_dataset
         self.atom_dataset.drop_elems(list_elem=self.adjacency_matrix.filter_dataset['Atom1'].unique())
-        #Статистика по Rsd
-        plt.scatter(x=self.atom_dataset.filter_dataset['Rsd'])
+        #Обновляем инфу про композит
+        self.composition = dict(self.atom_dataset.filter_dataset['Name'].value_counts())
 
-    def in_POSCAR(self, scaling_factor=1):
+    def statistics(self, Rsd_min, last=False):
+        self.additional_information.Rsd_counts[Rsd_min] = self.atom_dataset.filter_dataset['Name'].value_counts()['ZA']
+        if last:
+            return self.additional_information.Rsd_counts
+        """ДОБАВИТЬ ЭТО ВСЕ В ДОП ПАРАМЕТРЫ"""
+
+    def in_POSCAR(self, path, Rsd, scaling_factor=1):
         name_file = self.name_db.replace('.dat','_') + self.additional_information.dataset['name'].replace(' ','')
-        name_file = ''.join(s for s in name_file if s not in '\/:*?"<>|+')
+        name_file = ''.join(s for s in name_file if s not in '\/:*?"<>|+') + '_Rsd=' + str(Rsd)
+        """Добавить Path"""
         if not os.path.isdir('ready'):
             os.mkdir('ready')
             os.mkdir('ready\\POSCAR')
