@@ -52,11 +52,14 @@ class Cell:
         #Обновляем инфу про композит
         self.composition = dict(self.atom_dataset.filter_dataset['Name'].value_counts())
 
-    def statistics(self, Rsd_min, last=False):
-        self.additional_information.Rsd_counts[Rsd_min] = self.atom_dataset.filter_dataset['Name'].value_counts()['ZA']
-        if last:
-            return self.additional_information.Rsd_counts
-        """ДОБАВИТЬ ЭТО ВСЕ В ДОП ПАРАМЕТРЫ"""
+    def statistics(self, Rsd_min):
+        #Кол-во пустот для данного Rsd
+        ZA_values = self.atom_dataset.filter_dataset['Name'].value_counts()['ZA']
+        self.additional_information.distribution_Rsd(Rsd_min=Rsd_min,ZA_values=ZA_values)
+        #Кол-во каналов для данного Rsd
+        channel_ZA_values = self.adjacency_matrix.filter_dataset[['Atom1', 'Atom2']]
+
+
 
     def in_POSCAR(self, path, Rsd, scaling_factor=1):
         name_file = self.name_db.replace('.dat','_') + self.additional_information.dataset['name'].replace(' ','')

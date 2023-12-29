@@ -13,6 +13,7 @@ pd.set_option('display.max_rows', None)
 def wall():
     print('--------------------------------------------')
 
+#Рассчитать кол-во столбцов и строк на рисунке
 def number_multipliers(number):
     factor1 = 0
     factor2 = number
@@ -80,10 +81,10 @@ if __name__ == '__main__':
                 cell.atom_dataset.filter_Rsd(Rsd_min)
                 cell.filter_matrix()
                 #cell.in_POSCAR(path=path, Rsd=Rsd_min)
+                cell.statistics(Rsd_min=Rsd_min)
                 if Rsd_min == cell.Rsd_unique('Li')[-1]:
-                    Rsd_counts.append(cell.statistics(Rsd_min=Rsd_min, last=True))
-                else:
-                    cell.statistics(Rsd_min=Rsd_min)
+                    Rsd_counts.append(cell.additional_information.Rsd_counts)
                 wall()
+            print(cell.adjacency_matrix.filter_dataset)
         plot_Rsd_counts(Rsd_counts, cell_name=cell_names)
 

@@ -18,7 +18,3 @@ class Atoms:
                 self.filter_dataset.drop(drop_.index, axis=0, inplace=True)
 
 
-    #Статистика
-    def statistics_Rsd(self):
-        ZA_ = self.filter_dataset[self.filter_dataset['Name']== 'ZA']
-        min_Rsd, max_Rsd = ZA_['Rsd'].min()

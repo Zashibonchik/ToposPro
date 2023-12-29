@@ -8,3 +8,8 @@ class Additional_information:
         self.dataset = dataset
         self.Rsd_counts = {}
 
+    def distribution_Rsd(self, Rsd_min, ZA_values):
+        self.Rsd_counts[Rsd_min] = ZA_values
+
+
+
