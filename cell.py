@@ -4,6 +4,8 @@ from atoms import Atoms
 from adjacency_matrix import Adjacency_matrix
 from additional_information import Additional_information
 import matplotlib.pyplot as plt
+#отключить ложное предупреждение
+pd.options.mode.chained_assignment = None
 class Cell:
     def __init__(self, atom_dataset, adjacency_matrix, additional_information,name_db):
         """
@@ -29,13 +31,10 @@ class Cell:
     #фильтр матрицы
     def filter_matrix(self, elements=['Li', 'O'], coef_deformation=10):
         radii = {'H': 0.400, 'He': 0.700, 'Li': 1.450, 'O': 0.600, 'Mg': 1.500, 'P': 1.000, 'V': 1.350}
-        try:
-            #Коорд пустот
-            ZA_ = self.atom_dataset.filter_dataset[self.atom_dataset.filter_dataset['Name'] == 'ZA']
-            #Пустота + ее номер
-            ZA_ = ZA_['Name'] + ZA_['Num']
-        except:
-            raise AttributeError('Не проведена фильтрация радиусов пустот (Rsd)') from None
+        #Коорд пустот
+        ZA_ = self.atom_dataset.filter_dataset[self.atom_dataset.filter_dataset['Name'] == 'ZA']
+        #Пустота + ее номер
+        ZA_ = ZA_['Name'] + ZA_['Num']
         #удаление лишних пустот
         self.adjacency_matrix.filter_Rsd(ZA_)
         #выбор связи
@@ -57,7 +56,18 @@ class Cell:
         ZA_values = self.atom_dataset.filter_dataset['Name'].value_counts()['ZA']
         self.additional_information.distribution_Rsd(Rsd_min=Rsd_min,ZA_values=ZA_values)
         #Кол-во каналов для данного Rsd
-        channel_ZA_values = self.adjacency_matrix.filter_dataset[['Atom1', 'Atom2']]
+        #удаление повторов в МС
+        channel_ZA_values = self.adjacency_matrix.filter_dataset[['Atom1', 'Atom2', 'SSeg']]
+        channel_ZA_values.drop(channel_ZA_values[channel_ZA_values['Atom1'].apply(lambda x: 'ZA' not in x)].index, inplace=True)
+        tuple_rows_ = {}
+        for index, row in channel_ZA_values.iterrows():
+            row = tuple(sorted(row[['Atom1', 'Atom2']]))
+            if row in tuple_rows_:
+                channel_ZA_values.drop(index, inplace=True)
+            else:
+                tuple_rows_[row] = index
+        self.additional_information.channel_ZA_values_filter = channel_ZA_values
+
 
 
 

@@ -85,6 +85,5 @@ if __name__ == '__main__':
                 if Rsd_min == cell.Rsd_unique('Li')[-1]:
                     Rsd_counts.append(cell.additional_information.Rsd_counts)
                 wall()
-            print(cell.adjacency_matrix.filter_dataset)
         plot_Rsd_counts(Rsd_counts, cell_name=cell_names)
 
