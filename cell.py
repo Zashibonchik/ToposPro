@@ -54,22 +54,30 @@ class Cell:
     def statistics(self, Rsd_min):
         #Кол-во пустот для данного Rsd
         ZA_values = self.atom_dataset.filter_dataset['Name'].value_counts()['ZA']
-        self.additional_information.distribution_Rsd(Rsd_min=Rsd_min,ZA_values=ZA_values)
+        self.additional_information.distribution_Rsd(Rsd_min=Rsd_min, ZA_values=ZA_values)
         #Кол-во каналов для данного Rsd
         #удаление повторов в МС
+        """Возможно удаление дубликатов характеризующих одну и ту же пустоты. 
+        Например, удалится вторая строка в следующем массиве:
+           Atom1 Atom2   SSeg
+            ZA2   ZA4  2.100
+            ZA2   ZA4  2.100
+        Но в следующем массиве удаление не произойдет:
+            Atom1 Atom2   SSeg
+            ZA2   ZA4  2.099
+            ZA2   ZA4  2.100"""
         channel_ZA_values = self.adjacency_matrix.filter_dataset[['Atom1', 'Atom2', 'SSeg']]
-        channel_ZA_values.drop(channel_ZA_values[channel_ZA_values['Atom1'].apply(lambda x: 'ZA' not in x)].index, inplace=True)
+        channel_ZA_values = channel_ZA_values[channel_ZA_values['Atom1'].str.contains('ZA') &
+                                              channel_ZA_values['Atom2'].str.contains('ZA')]
         tuple_rows_ = {}
         for index, row in channel_ZA_values.iterrows():
-            row = tuple(sorted(row[['Atom1', 'Atom2']]))
-            if row in tuple_rows_:
+            row_ = tuple(sorted(row[['Atom1', 'Atom2']]))
+            if row_ in tuple_rows_ and tuple_rows_[row_] == row['SSeg']:
                 channel_ZA_values.drop(index, inplace=True)
             else:
-                tuple_rows_[row] = index
+                tuple_rows_[row_] = row['SSeg']
         self.additional_information.channel_ZA_values_filter = channel_ZA_values
-
-
-
+        self.additional_information.distribution_Rad(Rsd_min=Rsd_min)
 
     def in_POSCAR(self, path, Rsd, scaling_factor=1):
         name_file = self.name_db.replace('.dat','_') + self.additional_information.dataset['name'].replace(' ','')

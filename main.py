@@ -22,7 +22,7 @@ def number_multipliers(number):
         if number % factor1 == 0:
             factor2 = number // factor1
     return factor1, factor2
-def plot_Rsd_counts(Rsd_counts: list, cell_name: str):
+def plot_distribution(Rsd_counts: list, Rad_counts: list, cell_name: str):
     if len(Rsd_counts) in (3, 5):
         if len(Rsd_counts) == 3:
             rows = 2
@@ -32,16 +32,24 @@ def plot_Rsd_counts(Rsd_counts: list, cell_name: str):
             columns = 3
     else:
         columns, rows = number_multipliers(len(Rsd_counts))
+    plot_Rsd_counts(Rsd_counts=Rsd_counts,
+                    cell_name=cell_name,
+                    rows=rows, columns=columns)
+    plot_Rad_counts(Rad_counts=Rad_counts,
+                    cell_name=cell_name,
+                    rows=rows, columns=columns)
+
+def plot_Rsd_counts(Rsd_counts: list, cell_name: str, rows: int, columns: int):
     fig, axs = plt.subplots(rows, columns, figsize=(10, 6),
                             layout='constrained',
                             sharex=True, sharey=True)
     fig.suptitle('Количество пустот в зависимости от Rsd', fontsize=16)
     for ax, elem in zip(np.array(axs).flat, range(len(Rsd_counts))):
-        if elem >= len(np.array(axs).flat)//2:
+        if elem >= len(np.array(axs).flat) // 2:
             ax.set_xlabel('Rsd')
-        if elem == 0 or elem == len(np.array(axs).flat)//2:
+        if elem == 0 or elem == len(np.array(axs).flat) // 2:
             ax.set_ylabel('Кол-во пустот')
-        ax.set_axisbelow(True) #Нарисовать сетку поздаи всех элементов графика
+        ax.set_axisbelow(True)  # Нарисовать сетку поздаи всех элементов графика
         ax.grid(True)
         ax.set_title(cell_name[elem])
         ax.scatter(x=list(Rsd_counts[elem].keys()), y=list(Rsd_counts[elem].values()),
@@ -53,6 +61,50 @@ def plot_Rsd_counts(Rsd_counts: list, cell_name: str):
     (np.array(axs).flat)[-1].set_xlabel('Rsd')
     fig.savefig(fname='Количество пустот в зависимости от Rsd.jpg')
     plt.show()
+def plot_Rad_counts(Rad_counts: list, cell_name: str, rows: int, columns: int):
+    fig, axs = plt.subplots(rows, columns, figsize=(10, 6),
+                            layout='constrained',
+                            sharex=True, sharey=True)
+    for ax, elem in zip(np.array(axs).flat, range(len(Rad_counts))):
+        if elem >= len(np.array(axs).flat) // 2:
+            ax.set_xlabel('Rsd')
+        if elem == 0 or elem == len(np.array(axs).flat) // 2:
+            ax.set_ylabel('Rad')
+        ax.set_axisbelow(True)  # Нарисовать сетку поздаи всех элементов графика
+        ax.grid(True)
+        ax.set_title(cell_name[elem])
+        mean_values, std_values, min_values, q25_values, q50_values, q75_values, max_values = [],[],[],[],[],[],[]
+        for df in Rad_counts[elem].values():
+            mean_values.append(df['mean'])
+            std_values.append(df['std'])
+            min_values.append(df['min'])
+            q25_values.append(df['25%'])
+            q50_values.append(df['50%'])
+            q75_values.append(df['75%'])
+            max_values.append(df['max'])
+        x_values = list(Rad_counts[elem].keys())
+        #среднее
+        ax.scatter(x=x_values, y=mean_values,
+                   color='darkorange',
+                   edgecolors='black',
+                   s=50, label='Среднее'
+                   )
+        #минимум
+        ax.scatter(x=x_values, y=min_values,
+                   color='red',
+                   edgecolors='black',
+                   s=50, label='Мин'
+                   )
+        #максимум
+        ax.scatter(x=x_values, y=max_values,
+                   color='blue',
+                   edgecolors='black',
+                   s=50, label='Макс'
+                   )
+        ax.tick_params(axis='both', direction='in')
+    fig.savefig(fname='Попка.jpg')
+    plt.show()
+
 if __name__ == '__main__':
     # path = input('Введите путь к файлам: ')
     path = 'D:\Py\проекты\ToposPro\check'
@@ -71,6 +123,7 @@ if __name__ == '__main__':
     wall()
     for file_cells, file_name in zip(full_cells, os.listdir(path)):
         Rsd_counts = []
+        Rad_counts = []
         cell_names = []
         print('Файл: {}', file_name)
         for cell in file_cells:
@@ -84,6 +137,8 @@ if __name__ == '__main__':
                 cell.statistics(Rsd_min=Rsd_min)
                 if Rsd_min == cell.Rsd_unique('Li')[-1]:
                     Rsd_counts.append(cell.additional_information.Rsd_counts)
+                    Rad_counts.append(cell.additional_information.Rad_counts)
                 wall()
-        plot_Rsd_counts(Rsd_counts, cell_name=cell_names)
+        print(Rad_counts)
+        plot_distribution(Rsd_counts=Rsd_counts, Rad_counts=Rad_counts, cell_name=cell_names)
 
