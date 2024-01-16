@@ -38,8 +38,14 @@ if __name__ == '__main__':
             for Rsd_min in cell.Rsd_unique('Li'):
                 print('Rsd = ', Rsd_min)
                 cell.atom_dataset.filter_Rsd(Rsd_min)
+                #можно указать до двух элементов и коэф деформации
                 cell.filter_matrix()
-                #cell.in_POSCAR(path=path, Rsd=Rsd_min)
+                #Названия файла
+                name_file = cell.name_db.replace('.dat', '_') + cell.additional_information.dataset['name'].replace(' ', '')
+                name_file = ''.join(s for s in name_file if s not in '\/:*?"<>|+') + '_Rsd=' + str(Rsd_min)
+
+                cell.atomic_environment(center='ZA',environment='V', name_file=name_file)
+                cell.in_POSCAR(path=path, name_file=name_file)
                 cell.statistics(Rsd_min=Rsd_min)
                 if Rsd_min == cell.Rsd_unique('Li')[-1]:
                     Rsd_counts.append(cell.additional_information.Rsd_counts)

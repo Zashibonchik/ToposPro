@@ -27,8 +27,12 @@ def plot_distribution(Rsd_counts: list, Rad_counts: list, cell_name: str):
             columns = 3
     else:
         columns, rows = number_multipliers(len(Rsd_counts))
-    if not os.path.isdir('ready/Graphics'):
-        os.mkdir('ready/Graphics')
+    if not os.path.isdir(os.path.join('ready', 'Graphics')):
+        try:
+            os.mkdir('ready')
+            os.mkdir(os.path.join('ready', 'Graphics'))
+        except:
+            os.mkdir(os.path.join('ready', 'Graphics'))
     plot_Rsd_counts(Rsd_counts=Rsd_counts,
                     cell_name=cell_name,
                     rows=rows, columns=columns,

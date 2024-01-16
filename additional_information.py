@@ -18,5 +18,11 @@ class Additional_information:
         self.channel_ZA_values_filter['SSeg'] = self.channel_ZA_values_filter['SSeg'].astype('float')
         self.Rad_counts[Rsd_min] = self.channel_ZA_values_filter['SSeg'].describe()
 
+    def center_environment(self, df):
+        min_R = df['R'].min()
+        max_R = df['R'].max()
+        df_min = df[df['R'] == min_R]
+        df_max = df[df['R'] == max_R]
+        return df_min, df_max
 
 

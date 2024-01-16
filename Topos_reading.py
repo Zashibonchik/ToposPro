@@ -103,6 +103,9 @@ def additional_information_transfer_in_df(additional_information) -> pd.Series:
             parameters_dict[name[:-1]] = value
     #название
     parameters_dict['name'] = name_cell[name_cell.find(':') + 1: name_cell.find('.')]
+    #СТРОКА С ПОДГОНОМЕТРИЕЙ
+    if parameters_dict['name'].find('File:'):
+        parameters_dict['name'] = parameters_dict['name'][parameters_dict['name'].find('File:')+6:]
     return pd.Series(parameters_dict)
 
 def after_equals(line):

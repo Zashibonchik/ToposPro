@@ -51,6 +51,32 @@ class Cell:
         #Обновляем инфу про композит
         self.composition = dict(self.atom_dataset.filter_dataset['Name'].value_counts())
 
+    def atomic_environment(self, center, environment, name_file):
+        channel_center_environment = self.adjacency_matrix.filter_dataset[['Atom1', 'Atom2', 'R']]
+        channel_center_environment = channel_center_environment[channel_center_environment['Atom1'].str.contains(center) &
+                                              channel_center_environment['Atom2'].str.contains(environment)]
+        df_min, df_max = self.additional_information.center_environment(channel_center_environment)
+        if not os.path.isdir(os.path.join('ready', 'Files')):
+            try:
+                os.mkdir('ready')
+                os.mkdir(os.path.join('ready', 'Files'))
+            except:
+                os.mkdir(os.path.join('ready', 'Files'))
+        print(channel_center_environment.sort_values(by='R')['R'].value_counts())
+        plt.plot([float(i) for i in channel_center_environment.sort_values(by='R')['R'].value_counts(sort=False).index],
+                 channel_center_environment.sort_values(by='R')['R'].value_counts(sort=False),
+                    linewidth=2,
+                    color='darkorange',
+                    marker='x')
+        """СДЕЛАТЬ СОХРАНЕНИЕ ЯЧЕЙКИ В ОДИН ФАЙЛ, а для не для каждого Rsd"""
+        plt.show()
+        with open(os.path.join('ready', 'Files', name_file+'.txt'), 'w') as file_to_save:
+            file_to_save.write('Минимальная длина канала между {} и {}\n'.format(center, environment))
+            file_to_save.write(df_min.__repr__())
+            file_to_save.write('\n')
+            file_to_save.write('Максимальная длина канала между {} и {}\n'.format(center, environment))
+            file_to_save.write(df_max.__repr__())
+
     def statistics(self, Rsd_min):
         #Кол-во пустот для данного Rsd
         ZA_values = self.atom_dataset.filter_dataset['Name'].value_counts()['ZA']
@@ -79,14 +105,15 @@ class Cell:
         self.additional_information.channel_ZA_values_filter = channel_ZA_values
         self.additional_information.distribution_Rad(Rsd_min=Rsd_min)
 
-    def in_POSCAR(self, path, Rsd, scaling_factor=1):
-        name_file = self.name_db.replace('.dat','_') + self.additional_information.dataset['name'].replace(' ','')
-        name_file = ''.join(s for s in name_file if s not in '\/:*?"<>|+') + '_Rsd=' + str(Rsd)
+    def in_POSCAR(self, path, name_file, scaling_factor=1):
         """Добавить Path"""
-        if not os.path.isdir('ready'):
-            os.mkdir('ready')
-            os.mkdir('ready\\POSCAR')
-        with open('ready\\POSCAR\\' + name_file, 'a') as export:
+        if not os.path.isdir(os.path.join('ready', 'POSCAR')):
+            try:
+                os.mkdir('ready')
+                os.mkdir(os.path.join('ready', 'POSCAR'))
+            except:
+                os.mkdir(os.path.join('ready', 'POSCAR'))
+        with open(os.path.join('ready', 'POSCAR', name_file), 'a') as export:
             # имя
             write_line = [self.additional_information.dataset['name'] + '\n']
             # фактор скалирования

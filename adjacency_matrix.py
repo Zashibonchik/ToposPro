@@ -1,12 +1,14 @@
 import pandas as pd
 class Adjacency_matrix:
     """
-    Rsd_counts: type - dict, список значения фильтра Rsd И кол-во пустот после фильтрации
+    :param filter_dataset - отфильтрованная МС
+    :param dataset - исходные данные
     """
 
     def __init__(self, dataset: pd.DataFrame):
         self.dataset = dataset
         self.filter_dataset = pd.DataFrame(columns=dataset.columns)
+
 
     def filter_Rsd(self, voids):
         #Atom1
