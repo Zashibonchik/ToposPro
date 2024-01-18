@@ -52,6 +52,7 @@ class Cell:
         self.composition = dict(self.atom_dataset.filter_dataset['Name'].value_counts())
 
     def atomic_environment(self, center, environment, name_file):
+        """Недоделано"""
         channel_center_environment = self.adjacency_matrix.filter_dataset[['Atom1', 'Atom2', 'R']]
         channel_center_environment = channel_center_environment[channel_center_environment['Atom1'].str.contains(center) &
                                               channel_center_environment['Atom2'].str.contains(environment)]
@@ -62,15 +63,13 @@ class Cell:
                 os.mkdir(os.path.join('ready', 'Files'))
             except:
                 os.mkdir(os.path.join('ready', 'Files'))
-        print(channel_center_environment.sort_values(by='R')['R'].value_counts())
         plt.plot([float(i) for i in channel_center_environment.sort_values(by='R')['R'].value_counts(sort=False).index],
                  channel_center_environment.sort_values(by='R')['R'].value_counts(sort=False),
                     linewidth=2,
                     color='darkorange',
                     marker='x')
         """СДЕЛАТЬ СОХРАНЕНИЕ ЯЧЕЙКИ В ОДИН ФАЙЛ, а для не для каждого Rsd"""
-        plt.show()
-        with open(os.path.join('ready', 'Files', name_file+'.txt'), 'w') as file_to_save:
+        with open(os.path.join('ready', 'Files', name_file + '.txt'), 'w') as file_to_save:
             file_to_save.write('Минимальная длина канала между {} и {}\n'.format(center, environment))
             file_to_save.write(df_min.__repr__())
             file_to_save.write('\n')

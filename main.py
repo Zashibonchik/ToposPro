@@ -7,6 +7,17 @@ import pandas as pd
 
 
 pd.set_option('display.max_rows', None)
+def save_in_file(cell, Rsd, Rad):
+    with open(os.path.join('ready', 'Files', cell + '.txt'), 'w') as file_to_save:
+        file_to_save.write('Минимальное Rsd: количество пустот\n')
+        for key, value in Rsd.items():
+            str_to_write = str(key) +' : '+ str(value) + '\n'
+            file_to_save.write(str_to_write)
+        file_to_save.write('Статистики радиуса каналов\n')
+        for key, value in Rad.items():
+            str_to_write = 'Rsd : ' + str(key) + '\n'
+            file_to_save.write(str_to_write)
+            file_to_save.write(value.__repr__() + '\n')
 def wall():
     print('--------------------------------------------')
 
@@ -43,13 +54,13 @@ if __name__ == '__main__':
                 #Названия файла
                 name_file = cell.name_db.replace('.dat', '_') + cell.additional_information.dataset['name'].replace(' ', '')
                 name_file = ''.join(s for s in name_file if s not in '\/:*?"<>|+') + '_Rsd=' + str(Rsd_min)
-
-                cell.atomic_environment(center='ZA',environment='V', name_file=name_file)
+                # cell.atomic_environment(center='ZA',environment='V', name_file=name_file)
                 cell.in_POSCAR(path=path, name_file=name_file)
                 cell.statistics(Rsd_min=Rsd_min)
                 if Rsd_min == cell.Rsd_unique('Li')[-1]:
                     Rsd_counts.append(cell.additional_information.Rsd_counts)
                     Rad_counts.append(cell.additional_information.Rad_counts)
                 wall()
+            save_in_file(cell=cell.additional_information.dataset['name'], Rsd=cell.additional_information.Rsd_counts, Rad=cell.additional_information.Rad_counts)
         plot.plot_distribution(Rsd_counts=Rsd_counts, Rad_counts=Rad_counts, cell_name=cell_names)
 
